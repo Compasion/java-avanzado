@@ -14,10 +14,14 @@ import java.util.ArrayList;
 
 public class ejercicio {
     List<Vertices> grafo = new ArrayList<>();
-    
+    List<Vertices> sol = new ArrayList<>();
+    List<TodasMejorSolucion> todasSol = new ArrayList<>();
+    int mejorSol; //guarda el numero de bombas de la mejor solucion.
+    int numerosol = 0;
+    int numeroDeLaMejorsol=0;
     
     public void crearGrafo(){
-        /* Grafo del ejercicio  solucion 3,8,9*/
+        /* Grafo del ejercicio  solucion 3,8,9(al empezar en cero la solucion es 2,7,8)*/
         Vertices v0 =new Vertices(0);
         Vertices v1 =new Vertices(1);
         Vertices v2 =new Vertices(2);
@@ -106,7 +110,14 @@ public class ejercicio {
             calcular(i);
             
         }
-        //imprimir();
+        imprimirSol(); //imprime una de las mejores soluciones
+        
+        //imprimimos todas las posibles mejores soluciones
+        for (int i=0; i<todasSol.size(); i++){
+             if (todasSol.get(i).getCantidadBombas() == mejorSol){
+                 todasSol.get(i).imprimir();
+             }
+        }
        
     
     }
@@ -118,6 +129,52 @@ public class ejercicio {
             
         }
         System.out.println("_______________________________ ");
+    }
+    
+    public void imprimirSol(){
+        System.out.println("____Una de las Posibles soluciones " + this.numeroDeLaMejorsol + "__________________ ");
+        for (int i=0; i<sol.size(); i++){
+            System.out.println("Nombre " + (sol.get(i).getNombre()+1));
+                        
+        }
+        System.out.println("_______________________________ ");
+    }
+    public void TodasSolucion(){
+        TodasMejorSolucion aux = new TodasMejorSolucion();
+        int aux_contar=0;
+        for (int i=0; i<grafo.size(); i++){
+            if (grafo.get(i).getEstacion()==1){
+                aux.aniadirVertice(grafo.get(i).getNombre());
+                aux_contar ++;
+            }
+        }
+        aux.setPosicion((this.numerosol-1));
+        aux.setCantidadBombas(aux_contar);
+        todasSol.add(aux);
+    }
+    public void GuardarmejorSolucion(){
+        int contador=0;
+        if (sol.isEmpty()){
+            for (int i=0; i<grafo.size(); i++){
+                if (grafo.get(i).getEstacion()==1){
+                    sol.add(grafo.get(i));
+                }
+            }
+        }else{
+            for (int i=0; i<grafo.size(); i++){
+                contador = contador + grafo.get(i).getEstacion();
+            }
+            if (contador<sol.size()){
+                sol.clear();
+                for (int i=0; i<grafo.size(); i++){
+                if (grafo.get(i).getEstacion()==1){
+                    sol.add(grafo.get(i));
+                }
+                mejorSol = contador;
+                numeroDeLaMejorsol = this.numerosol;
+            }
+            }
+        }
     }
     
     public boolean todosNoVisitados(){
@@ -147,12 +204,12 @@ public class ejercicio {
                 }
             }
             if (!todosNoVisitados()){
-                imprimir();
-              /* for( int i=0; i<grafo.size();i++ ){
-                    grafo.get(i).setEstado(false);
-                    grafo.get(i).setEstacion(0);
-                } 
-              */
+               
+                System.out.println("____________"+this.numerosol  +"_________________ ");
+                this.numerosol ++;
+                imprimir(); //imprime todas las soluciones
+                GuardarmejorSolucion(); //imprime una mejor solucion
+                TodasSolucion();   //imprime todas las mejores soluciones
             }
             //grafo.get(v).setEstacion(0); //pongo que tienen bombero en el terreno
             //grafo.get(v).setEstado(false); //lo pongo a solucionado
